@@ -114,3 +114,59 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 
+from banco import supabase
+
+from flask import Flask, request, redirect, render_template
+from banco import supabase
+
+app = Flask(__name__)
+
+@app.route("/")
+def pagina_inicial():
+    return """
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <title>Registrar Gamificação</title>
+    </head>
+    <body>
+        <h1>Registrar Gamificação</h1>
+<form action="/registrar" method="POST">
+
+    <input type="text" name="id_user" placeholder="ID do usuário" required>
+
+    <textarea name="descricao" placeholder="Descrição"></textarea>
+
+    <input type="number" step="0.01" name="frequencia" placeholder="Frequência">
+
+    <input type="number" name="pontos" placeholder="Pontos">
+
+    <input type="text" name="status" placeholder="Status">
+
+    <button type="submit">Registrar</button>
+</form>
+    </body>
+    </html>
+    """
+
+@app.post("/registrar")
+def registrar():
+    id_user = request.form.get("id_user")
+    descricao = request.form.get("descricao")
+    frequencia = request.form.get("frequencia")
+    pontos = request.form.get("pontos")
+    status = request.form.get("status")
+
+    supabase.table("gamificacoes_registradas").insert({
+        "id_user": id_user,
+        "descricao": descricao,
+        "frequencia": float(frequencia),
+        "pontos": int(pontos),
+        "status": status
+    }).execute()
+
+    return redirect("/")
+
+if __name__ == "__main__":
+    app.run(debug=True)
